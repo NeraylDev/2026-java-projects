@@ -4,13 +4,11 @@ public class Main
 {
     public static void main(String[] args)
     {
-        Scanner scanner = new Scanner(System.in);
         Game game = new Game();
+        game.Start();
 
         while (true) {
-            String movementDirection = scanner.next();
-            game.Move(movementDirection);
-            game.PrintPlayerStats();
+            game.Update();
         }
     }
 }

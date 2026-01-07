@@ -1,82 +1,69 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
 public class Game
 {
+    private final Scanner _scanner;
+    private final Map _map;
+    private final Player _player;
 
-    public String[][] matrix = {{"01", "02", "03", "04"},
-            {"05", "06", "07", "08"},
-            {"09", "10", "11", "12"},
-            {"13", "14", "15", "()"}};
+    private boolean _started = false;
 
-    public int[] playerPosition = {3, 3}; // [x, y]
-
-    public void PrintPlayerStats() {
-        System.out.println("Player Position: (" + playerPosition[1] + ", " + playerPosition[0] + ")\n");
+    public Game()
+    {
+        _scanner = new Scanner(System.in);
+        _map = new Map();
+        _player = new Player();
     }
 
-    public void UpdatePlayerObjectPosition(int[] oldPosition, int[] newPosition)
+    public void Start()
     {
-        String other = matrix[newPosition[0]][newPosition[1]];
-        matrix[newPosition[0]][newPosition[1]] = "()";
-        matrix[oldPosition[0]][oldPosition[1]] = other;
+        RandomizePlayerPosition();
+        _map.PrintMap();
 
-        PrintMatrix();
+        _started = true;
     }
 
-    public void PrintMatrix()
+    public void Update()
     {
-        for (int line = 0; line < matrix.length; line++)
+        if (!_started)
+            return;
+
+        String movementDirection = _scanner.next();
+
+        _player.Move(_map, movementDirection);
+        _player.PrintPlayerInfo();
+        _map.PrintMap();
+
+        if (Arrays.deepEquals(_map.currentMatrix, _map.baseMatrix))
+            System.out.println("CONGRATULATIONS! You win!");
+    }
+
+    private void RandomizePlayerPosition()
+    {
+        int numberOfMoves = 10;
+        int currentNumberOfMoves = 0;
+
+        while(currentNumberOfMoves < numberOfMoves)
         {
-            for (int column = 0; column < matrix[line].length; column ++)
-            {
-                System.out.print(matrix[line][column] + " ");
+            int direction = (int)(Math.random() * 3);
+
+            switch (direction) {
+                case 0:
+                    _player.Move(_map, "W");
+                    break;
+                case 1:
+                    _player.Move(_map, "S");
+                    break;
+                case 2:
+                    _player.Move(_map, "A");
+                    break;
+                case 3:
+                    _player.Move(_map, "D");
+                    break;
             }
-            System.out.println();
+
+            currentNumberOfMoves++;
         }
     }
-
-    public void Move(String directionInput) {
-        int[] oldPosition = new int[]{playerPosition[0], playerPosition[1]};
-
-        switch (directionInput) {
-            case "W":
-                MoveUp();
-                break;
-            case "S":
-                MoveDown();
-                break;
-            case "A":
-                MoveLeft();
-                break;
-            case "D":
-                MoveRight();
-                break;
-        }
-
-        int[] newPosition = new int[]{playerPosition[0], playerPosition[1]};
-        UpdatePlayerObjectPosition(oldPosition, newPosition);
-    }
-
-    private void MoveUp() {
-        playerPosition[0] -= 1;
-        if (playerPosition[0] < 0)
-            playerPosition[0] = 0;
-    }
-
-    private void MoveDown() {
-        playerPosition[0] += 1;
-        if (playerPosition[0] > 3)
-            playerPosition[0] = 3;
-    }
-
-    private void MoveLeft() {
-        playerPosition[1] -= 1;
-        if (playerPosition[1] < 0)
-            playerPosition[1] = 0;
-    }
-
-    private void MoveRight() {
-        playerPosition[1] += 1;
-        if (playerPosition[1] > 3)
-            playerPosition[1] = 3;
-    }
-
 }
